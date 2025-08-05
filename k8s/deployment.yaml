@@ -1,34 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: zomato-clone-deployment
+  name: zomato-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: zomato-clone
+      app: zomato-app
   template:
     metadata:
       labels:
-        app: zomato-clone
+        app: zomato-app
     spec:
       containers:
       - name: zomato
-        image: rajveerkalra/zomato-clone-app
+        image: rajveerkalra/zomato-clone-app:latest
         ports:
         - containerPort: 3000
-
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: zomato-clone-service
+  name: zomato-service
 spec:
   type: NodePort
   selector:
-    app: zomato-clone
+    app: zomato-app
   ports:
-    - protocol: TCP
-      port: 3000
+    - port: 3000
       targetPort: 3000
       nodePort: 31000
