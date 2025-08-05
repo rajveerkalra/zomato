@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: zomato-app
+  labels:
+    app: zomato-app
 spec:
   replicas: 1
   selector:
@@ -13,15 +15,41 @@ spec:
         app: zomato-app
     spec:
       containers:
-      - name: zomato
-        image: rajveerkalra/zomato-clone-app:latest
-        ports:
-        - containerPort: 3000
+        - name: zomato
+          image: rajveerkalra/zomato-clone-app:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "300m"
+              memory: "256Mi"
+
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
   name: zomato-service
+  labels:
+    app: zomato-app
 spec:
   type: NodePort
   selector:
